@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" data-id="true">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet"
+  href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <title>Login</title>
+</head>
+<body>
+    <style>
+               .login {
+            display: flex;
+        }
+        section form {
+    background-color: #073d58;
+    width: 500px;
+    padding: 30px;
+    margin: 120px auto;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+
+}
+
+section form input {
+    border-radius: 10px;
+    height: 40px;
+    width: 400px;
+    border: none;
+    align-items: center;
+    padding-left: 20px;
+    font-size: 16px;
+
+}
+
+section form label {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+section form button {
+    width: 300px;
+    height: 45px;
+    margin-left: 40px;
+    border-radius: 20px;
+    margin-top: 15px;
+    font-size: 15px;
+    color: #fff;
+    font-weight: bold;
+    background-color: #1077b0;
+    border: none;
+    cursor: pointer;
+}
+.sign {
+    display: flex;
+}
+
+.sign p {
+    margin-top: 20px;
+    font-size: 17px;
+    width: fit-content;
+}
+
+#sign {
+    width: 100%;
+}
+
+div {
+    margin: 0;
+    padding: 0;
+}
+
+form #email_error,
+form #pass_error {
+    /* margin: 5px auto; */
+    width: 345px;
+    font-size: 18px;
+    color: #f0e8e8;
+    background: rgba(255, 0, 0, 0.1);
+    text-align: center;
+    padding: 5px 8px;
+    border-radius: 3px;
+    border: 1px solid #EF9A9A;
+    display: none;
+}
+
+h3 {
+    text-align: center;
+    color: #fff;
+}
+ 
+.loader {
+    width: 48px;
+    height: 48px;
+    margin-top: 50px;
+    margin-left: 50%;
+    visibility: hidden;
+    border: 5px solid #073d58;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    }
+
+.user {
+    display: flex;
+    margin-top: 40px;
+}
+
+#image {
+    width: 500px;
+    height: 400px;
+    margin-left: 60px;
+    border-radius: 5px;
+}
+
+    @keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+    } 
+
+
+        @media only screen and (max-width: 768px) {
+    .login {
+        flex-direction: column;
+        align-items: center;
+    }
+    .login form {
+        width: 90%;
+        align-self: center;
+        margin-right: 7%;
+
+    }
+    
+    .login form input {
+    border-radius: 10px;
+    height: 40px;
+    width: 86%;
+    border: none;
+}
+
+.login form button {
+    width: 60%;
+    height: 45px;
+    margin-left: 30px;
+    border-radius: 20px;
+    margin-top: 15px;
+}
+    
+}
+    </style>
+
+    <span class="loader" id="load"></span>
+    <div>
+        <section className="login">
+            <form className="login_form" id="login_form" name="form">
+                <h3>ADMIN LOGIN</h3>
+                <div>
+                <label htmlFor="">Email</label> <br></br>
+                <input type="text" id="email" name="email" /><br></br>
+                </div>
+                <div id="email_error">Please Fill Your Email</div>
+                <div>
+                    <label htmlFor="">Password</label> <br></br>
+                    <input type="password" id="password" name="password"><br></br>
+                </div>
+                <div id="pass_error">Please Fill Your Password</div>
+                <button type="submit">Login</button>
+                <div className="sign">
+                    <p>Not a member, click here to Sign up</p><a href="signup.html">Sign Up</a>
+                </div>
+            </form>
+        </section>
+    </div>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+        const form = document.getElementById('login_form');
+        form.addEventListener('submit', async(e) => {
+            e.preventDefault();
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+    
+    
+        try {
+            const result = await fetch('http://localhost:4000/user/login', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+        },
+            body: JSON.stringify({
+            email,
+            password
+
+        })
+    })
+        const data = await result.json();
+       // console.log(data.Message);
+        if(result.status == 200) {
+            const token = data.token;
+            console.log(token)
+            const parts= token.split('.');
+            const payload = JSON.parse(atob(parts[1]))
+            console.log(payload);
+            console.log(payload.user); 
+            localStorage.setItem('auth-token', token);
+            window.location.href = 'http://localhost:3000/home';
+        }
+        else  {
+
+            //swal(data.Message);
+            swal(data.Message, "Try again!", "error")
+        }
+            
+        } catch (error) {
+            console.log(error);
+            
+        }
+        })
+    </script>
+</body>
+</html>

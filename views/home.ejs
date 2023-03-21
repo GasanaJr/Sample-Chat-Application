@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+    integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+    crossorigin="anonymous"
+  />
+    <title>Document</title>
+</head>
+<body>
+    <input type="text" class="user">
+    <button onclick="sendUser()">Register</button>
+    <input type="text" class="message">
+    <button onclick="sendMessage()">Send Message</button>
+    <section class="chat">Helloooo ........</section>
+
+
+    <script>
+        const token = localStorage.getItem('auth-token');
+        const socket = io('http://localhost:3000', {query: {token}}); 
+        socket.on('connection');
+        socket.on("message", (data) => {
+            showMessage(data)
+
+        })
+
+        const sendUser = () => {
+            console.log('clicked')
+            const user = document.querySelector('.user').value;
+            socket.emit('register', user);   
+        }
+
+        const sendMessage = () => {
+            const message = document.querySelector('.message').value;
+            socket.emit('message', message);    
+        }
+
+        const showMessage = (data) => {
+            const div = document.createElement('div');
+            div.classList.add('message');
+            div.innerHTML = `<p class="meta">${data.userName} <span>${data.time}</span></p>
+            <p class="text">
+            ${data.msg}
+            </p>`;
+            document.querySelector('.chat').appendChild(div)
+        }
+    </script>
+    
+</body>
+</html>
